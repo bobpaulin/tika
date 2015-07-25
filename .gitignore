@@ -9,3 +9,4 @@ target
 *.iws
 nbactions.xml
 nb-configuration.xml
+/bin/
