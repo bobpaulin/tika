@@ -16,19 +16,44 @@
  */
 package org.apache.tika.parser.image.internal;
 
+import java.util.Dictionary;
+import java.util.Properties;
+
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.image.ImageParser;
 import org.apache.tika.parser.jpeg.JpegParser;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 public class Activator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
+		Dictionary imageProps = new Properties();
+		String imageServiceRank = context.getProperty("org.apache.tika.parser.image.serviceRank");
+		if(imageServiceRank != null)
+		{
+			try {
+				imageProps.put(Constants.SERVICE_RANKING, Integer.parseInt(imageServiceRank));
+			} catch (Exception e) {
+				//Service Rank Can't be Parsed.
+			}
+		}
 		
-		context.registerService(Parser.class, new JpegParser(), null);
-		context.registerService(Parser.class, new ImageParser(), null);
+		Dictionary jpegProps = new Properties();
+		String jpegServiceRank = context.getProperty("org.apache.tika.parser.jpeg.serviceRank");
+		if(jpegServiceRank != null)
+		{
+			try {
+				jpegProps.put(Constants.SERVICE_RANKING, Integer.parseInt(jpegServiceRank));
+			} catch (Exception e) {
+				//Service Rank Can't be Parsed.
+			}
+		}
+		
+		context.registerService(Parser.class, new JpegParser(), jpegProps);
+		context.registerService(Parser.class, new ImageParser(), imageProps);
 
 	}
 

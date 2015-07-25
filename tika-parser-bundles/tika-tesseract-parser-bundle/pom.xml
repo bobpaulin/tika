@@ -41,6 +41,12 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>tika-osgi-bundle</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>
@@ -52,9 +58,9 @@
         <configuration>
           <instructions>
             <_runsystempackages>com.sun.xml.bind.marshaller, com.sun.xml.internal.bind.marshaller</_runsystempackages>
-            <!-- <Bundle-Activator>
+            <Bundle-Activator>
               org.apache.tika.parser.ocr.internal.Activator
-            </Bundle-Activator> -->
+            </Bundle-Activator>
             <Embed-Dependency>
               tika-parsers;inline=org/apache/tika/parser/ocr/**
             </Embed-Dependency>

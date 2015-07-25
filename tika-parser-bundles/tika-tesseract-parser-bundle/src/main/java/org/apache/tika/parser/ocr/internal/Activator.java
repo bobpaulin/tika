@@ -16,16 +16,31 @@
  */
 package org.apache.tika.parser.ocr.internal;
 
+import java.util.Dictionary;
+import java.util.Properties;
+
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ocr.TesseractOCRParser;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 public class Activator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		context.registerService(Parser.class, new TesseractOCRParser(), null);
+		Dictionary props = new Properties();
+		String serviceRank = context.getProperty("org.apache.tika.parser.ocr.serviceRank");
+		if(serviceRank != null)
+		{
+			try {
+				props.put(Constants.SERVICE_RANKING, Integer.parseInt(serviceRank));
+			} catch (Exception e) {
+				//Service Rank Can't be Parsed.
+			}
+		}
+		
+		context.registerService(Parser.class, new TesseractOCRParser(), props);
 	}
 
 	@Override

@@ -18,35 +18,27 @@ package org.apache.tika.bundle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 
 import javax.inject.Inject;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.tika.Tika;
-import org.apache.tika.detect.DefaultDetector;
-import org.apache.tika.detect.Detector;
-import org.apache.tika.fork.ForkParser;
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.DefaultParser;
+import org.apache.tika.osgi.TikaService;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.internal.Activator;
 import org.apache.tika.sax.BodyContentHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +49,6 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.xml.sax.ContentHandler;
 
 @RunWith(PaxExam.class)
@@ -71,6 +62,7 @@ public class BundleIT {
     @Configuration
     public Option[] configuration() throws IOException, URISyntaxException {
         return options(
+        		frameworkProperty("org.apache.tika.parser.ocr.serviceRank").value("1"),
                 junitBundles(),
                 mavenBundle("org.apache.tika", "tika-osgi-bundle"),
                 mavenBundle("org.apache.tika", "tika-image-parser-bundle"),
@@ -93,6 +85,30 @@ public class BundleIT {
         }
         assertTrue("Core bundle not found", hasCore);
         assertTrue("Tesseract bundle not found", hasBundle);
+    }
+    
+    
+    @Test
+    public void testOcrParser() throws Exception {
+    	
+    	TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
+    	InputStream stream = bc.getBundle().getResource("image15.png").openStream();
+    	
+    	assertNotNull(stream);
+    	
+    	Metadata metadata = new Metadata();
+    	TikaInputStream tikaStream = TikaInputStream.get(stream);
+    	MediaType type = tikaService.detect(tikaStream, metadata);
+    	
+    	assertEquals("Media Type should be PNG", MediaType.image("png"), type);
+    	
+    	metadata.add(Metadata.CONTENT_TYPE, type.toString());
+    	Writer writer = new StringWriter();
+        ContentHandler contentHandler = new BodyContentHandler(writer);
+        ParseContext context = new ParseContext();
+        
+    	tikaService.parse(tikaStream, contentHandler, metadata, context);
+    	assertTrue("OCR Text should match image text", contentHandler.toString().trim().contains("Everything"));
     }
 
     
