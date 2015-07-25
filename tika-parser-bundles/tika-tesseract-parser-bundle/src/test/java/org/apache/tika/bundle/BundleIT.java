@@ -39,6 +39,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.osgi.TikaService;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.ocr.TesseractOCRParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,24 +88,33 @@ public class BundleIT {
     @Test
     public void testOcrParser() throws Exception {
 
-        TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
-        InputStream stream = bc.getBundle().getResource("image15.png").openStream();
-
-        assertNotNull(stream);
-
-        Metadata metadata = new Metadata();
-        TikaInputStream tikaStream = TikaInputStream.get(stream);
-        MediaType type = tikaService.detect(tikaStream, metadata);
-
-        assertEquals("Media Type should be PNG", MediaType.image("png"), type);
-
-        metadata.add(Metadata.CONTENT_TYPE, type.toString());
-        Writer writer = new StringWriter();
-        ContentHandler contentHandler = new BodyContentHandler(writer);
+        TesseractOCRParser tessParser = new TesseractOCRParser();
         ParseContext context = new ParseContext();
+        if(tessParser.getSupportedTypes(context).size() > 0)
+        {
+            TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
+            InputStream stream = bc.getBundle().getResource("image15.png").openStream();
 
-        tikaService.parse(tikaStream, contentHandler, metadata, context);
-        assertTrue("OCR Text should match image text", contentHandler.toString().trim().contains("Everything"));
+            assertNotNull(stream);
+
+            Metadata metadata = new Metadata();
+            TikaInputStream tikaStream = TikaInputStream.get(stream);
+            MediaType type = tikaService.detect(tikaStream, metadata);
+
+            assertEquals("Media Type should be PNG", MediaType.image("png"), type);
+
+            metadata.add(Metadata.CONTENT_TYPE, type.toString());
+            Writer writer = new StringWriter();
+            ContentHandler contentHandler = new BodyContentHandler(writer);
+
+            tikaService.parse(tikaStream, contentHandler, metadata, context);
+            assertTrue("OCR Text should match image text", contentHandler.toString().trim().contains("Everything"));
+        }
+        else
+        {
+            System.out.println("Tesseract Not Installed Tests Not run.");
+        }
+        
     }
 
 }

@@ -61,6 +61,9 @@
             <Bundle-Activator>
               org.apache.tika.parser.ocr.internal.Activator
             </Bundle-Activator>
+            <Export-Package>
+                org.apache.tika.parser.ocr.*
+            </Export-Package>
             <Embed-Dependency>
               tika-parsers;inline=org/apache/tika/parser/ocr/**
             </Embed-Dependency>
