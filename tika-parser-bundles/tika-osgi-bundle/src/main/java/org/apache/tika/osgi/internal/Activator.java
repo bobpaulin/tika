@@ -23,17 +23,17 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class Activator extends TikaActivator implements BundleActivator, ServiceTrackerCustomizer {
-	
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		context.registerService(TikaService.class, new TikaServiceImpl(), null);
 
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        context.registerService(TikaService.class, new TikaServiceImpl(), null);
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-	}
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        super.stop(context);
+    }
 
 }

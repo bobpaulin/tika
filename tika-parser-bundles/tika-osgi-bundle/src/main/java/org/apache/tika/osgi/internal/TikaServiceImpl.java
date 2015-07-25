@@ -40,36 +40,32 @@ import org.xml.sax.SAXException;
 
 public class TikaServiceImpl implements TikaService {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Parser defaultParser;
-	
-	private final Detector defaultDetector;
-	
-	public TikaServiceImpl() {
-		this.defaultDetector = new DefaultDetector();
-		this.defaultParser = new DefaultParser();
-	}
+    private final Parser defaultParser;
 
-	@Override
-	public Set<MediaType> getSupportedTypes(ParseContext context) {
-		return defaultParser.getSupportedTypes(context);
-	}
+    private final Detector defaultDetector;
 
-	@Override
-	public void parse(InputStream stream, ContentHandler handler,
-			Metadata metadata, ParseContext context) throws IOException,
-			SAXException, TikaException {
-		defaultParser.parse(stream, handler, metadata, context);
-		
-	}
+    public TikaServiceImpl() {
+        this.defaultDetector = new DefaultDetector();
+        this.defaultParser = new DefaultParser();
+    }
 
-	@Override
-	public MediaType detect(InputStream input, Metadata metadata)
-			throws IOException {
-		return defaultDetector.detect(input, metadata);
-	}
-	
-	
+    @Override
+    public Set<MediaType> getSupportedTypes(ParseContext context) {
+        return defaultParser.getSupportedTypes(context);
+    }
+
+    @Override
+    public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+            throws IOException, SAXException, TikaException {
+        defaultParser.parse(stream, handler, metadata, context);
+
+    }
+
+    @Override
+    public MediaType detect(InputStream input, Metadata metadata) throws IOException {
+        return defaultDetector.detect(input, metadata);
+    }
 
 }

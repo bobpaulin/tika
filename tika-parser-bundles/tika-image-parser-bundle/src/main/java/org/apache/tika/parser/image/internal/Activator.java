@@ -28,39 +28,30 @@ import org.osgi.framework.Constants;
 
 public class Activator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		Dictionary imageProps = new Properties();
-		String imageServiceRank = context.getProperty("org.apache.tika.parser.image.serviceRank");
-		if(imageServiceRank != null)
-		{
-			try {
-				imageProps.put(Constants.SERVICE_RANKING, Integer.parseInt(imageServiceRank));
-			} catch (Exception e) {
-				//Service Rank Can't be Parsed.
-			}
-		}
-		
-		Dictionary jpegProps = new Properties();
-		String jpegServiceRank = context.getProperty("org.apache.tika.parser.jpeg.serviceRank");
-		if(jpegServiceRank != null)
-		{
-			try {
-				jpegProps.put(Constants.SERVICE_RANKING, Integer.parseInt(jpegServiceRank));
-			} catch (Exception e) {
-				//Service Rank Can't be Parsed.
-			}
-		}
-		
-		context.registerService(Parser.class, new JpegParser(), jpegProps);
-		context.registerService(Parser.class, new ImageParser(), imageProps);
+    @Override
+    public void start(BundleContext context) throws Exception {
+        
+        Dictionary imageProps = new Properties();
+        String imageServiceRank = context.getProperty("org.apache.tika.parser.image.serviceRank");
+        if (imageServiceRank != null) {
+            imageProps.put(Constants.SERVICE_RANKING, Integer.parseInt(imageServiceRank));
+        }
 
-	}
+        Dictionary jpegProps = new Properties();
+        String jpegServiceRank = context.getProperty("org.apache.tika.parser.jpeg.serviceRank");
+        if (jpegServiceRank != null) {
+            jpegProps.put(Constants.SERVICE_RANKING, Integer.parseInt(jpegServiceRank));
+        }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
+        context.registerService(Parser.class, new JpegParser(), jpegProps);
+        context.registerService(Parser.class, new ImageParser(), imageProps);
 
-	}
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // TODO Auto-generated method stub
+
+    }
 
 }

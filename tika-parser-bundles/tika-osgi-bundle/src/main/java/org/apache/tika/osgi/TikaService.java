@@ -20,5 +20,5 @@ import org.apache.tika.detect.Detector;
 import org.apache.tika.parser.Parser;
 
 public interface TikaService extends Parser, Detector {
-	
+
 }

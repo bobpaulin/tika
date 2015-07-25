@@ -61,14 +61,11 @@ public class BundleIT {
 
     @Configuration
     public Option[] configuration() throws IOException, URISyntaxException {
-        return options(
-        		frameworkProperty("org.apache.tika.parser.ocr.serviceRank").value("1"),
-                junitBundles(),
+        return options(frameworkProperty("org.apache.tika.parser.ocr.serviceRank").value("1"), junitBundles(),
                 mavenBundle("org.apache.tika", "tika-osgi-bundle"),
                 mavenBundle("org.apache.tika", "tika-image-parser-bundle"),
                 bundle(new File(TARGET, "tika-tesseract-parser-bundle-1.10-SNAPSHOT.jar").toURI().toURL().toString()));
     }
-
 
     @Test
     public void testBundleLoaded() throws Exception {
@@ -86,30 +83,28 @@ public class BundleIT {
         assertTrue("Core bundle not found", hasCore);
         assertTrue("Tesseract bundle not found", hasBundle);
     }
-    
-    
+
     @Test
     public void testOcrParser() throws Exception {
-    	
-    	TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
-    	InputStream stream = bc.getBundle().getResource("image15.png").openStream();
-    	
-    	assertNotNull(stream);
-    	
-    	Metadata metadata = new Metadata();
-    	TikaInputStream tikaStream = TikaInputStream.get(stream);
-    	MediaType type = tikaService.detect(tikaStream, metadata);
-    	
-    	assertEquals("Media Type should be PNG", MediaType.image("png"), type);
-    	
-    	metadata.add(Metadata.CONTENT_TYPE, type.toString());
-    	Writer writer = new StringWriter();
+
+        TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
+        InputStream stream = bc.getBundle().getResource("image15.png").openStream();
+
+        assertNotNull(stream);
+
+        Metadata metadata = new Metadata();
+        TikaInputStream tikaStream = TikaInputStream.get(stream);
+        MediaType type = tikaService.detect(tikaStream, metadata);
+
+        assertEquals("Media Type should be PNG", MediaType.image("png"), type);
+
+        metadata.add(Metadata.CONTENT_TYPE, type.toString());
+        Writer writer = new StringWriter();
         ContentHandler contentHandler = new BodyContentHandler(writer);
         ParseContext context = new ParseContext();
-        
-    	tikaService.parse(tikaStream, contentHandler, metadata, context);
-    	assertTrue("OCR Text should match image text", contentHandler.toString().trim().contains("Everything"));
+
+        tikaService.parse(tikaStream, contentHandler, metadata, context);
+        assertTrue("OCR Text should match image text", contentHandler.toString().trim().contains("Everything"));
     }
 
-    
 }

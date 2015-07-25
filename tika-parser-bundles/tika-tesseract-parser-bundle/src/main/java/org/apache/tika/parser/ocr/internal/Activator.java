@@ -27,25 +27,20 @@ import org.osgi.framework.Constants;
 
 public class Activator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		Dictionary props = new Properties();
-		String serviceRank = context.getProperty("org.apache.tika.parser.ocr.serviceRank");
-		if(serviceRank != null)
-		{
-			try {
-				props.put(Constants.SERVICE_RANKING, Integer.parseInt(serviceRank));
-			} catch (Exception e) {
-				//Service Rank Can't be Parsed.
-			}
-		}
-		
-		context.registerService(Parser.class, new TesseractOCRParser(), props);
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        Dictionary props = new Properties();
+        String serviceRank = context.getProperty("org.apache.tika.parser.ocr.serviceRank");
+        if (serviceRank != null) {
+            props.put(Constants.SERVICE_RANKING, Integer.parseInt(serviceRank));
+        }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
+        context.registerService(Parser.class, new TesseractOCRParser(), props);
+    }
 
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+
+    }
 
 }

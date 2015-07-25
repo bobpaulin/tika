@@ -61,11 +61,9 @@ public class BundleIT {
 
     @Configuration
     public Option[] configuration() throws IOException, URISyntaxException {
-        return options(
-                junitBundles(),
+        return options(junitBundles(),
                 bundle(new File(TARGET, "tika-osgi-bundle-1.10-SNAPSHOT.jar").toURI().toURL().toString()));
     }
-
 
     @Test
     public void testBundleLoaded() throws Exception {
@@ -78,16 +76,16 @@ public class BundleIT {
         }
         assertTrue("Osgi bundle not found", hasBundle);
     }
-    
+
     @Test
     public void testEmptyParser() throws Exception {
-    	
-    	TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
-    	
-    	ParseContext context = new ParseContext();
-    	Set types = tikaService.getSupportedTypes(context);
-    	
-    	assertEquals("Types should be Empty", 0, types.size());
+
+        TikaService tikaService = bc.getService(bc.getServiceReference(TikaService.class));
+
+        ParseContext context = new ParseContext();
+        Set types = tikaService.getSupportedTypes(context);
+
+        assertEquals("Types should be Empty", 0, types.size());
     }
 
 }
