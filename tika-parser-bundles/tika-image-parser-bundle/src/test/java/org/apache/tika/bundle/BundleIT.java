@@ -69,19 +69,17 @@ import org.xml.sax.ContentHandler;
 @ExamReactorStrategy(PerMethod.class)
 public class BundleIT {
 
-    private final File TARGET = new File("target");
-   
-
+    private static final String BUNDLE_JAR_SYS_PROP = "project.bundle.file";
     @Inject
     private BundleContext bc;
 
     @Configuration
     public Option[] configuration() throws IOException, URISyntaxException {
-        File base = new File(TARGET, "test-bundles");
+        String bundleFileName = System.getProperty(BUNDLE_JAR_SYS_PROP);
         return options(
                 junitBundles(),
                 mavenBundle("org.apache.tika", "tika-osgi-bundle"),
-                bundle(new File(TARGET, "tika-image-parser-bundle-1.10-SNAPSHOT.jar").toURI().toURL().toString()));
+                bundle(new File(bundleFileName).toURI().toString()));
     }
 
 

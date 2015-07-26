@@ -33,7 +33,7 @@
   <packaging>bundle</packaging>
   <name>Apache Tika Osgi bundle</name>
   <url>http://tika.apache.org/</url>
-  
+
   <dependencies>
   	<dependency>
       <groupId>${project.groupId}</groupId>
@@ -78,6 +78,12 @@
                   WARN
                 </org.ops4j.pax.logging.DefaultServiceLog.level>
               </systemPropertyVariables>
+              <systemProperties>
+                <property>
+                    <name>project.bundle.file</name>
+                    <value>target/${project.build.finalName}.jar</value>
+                </property>
+              </systemProperties>
             </configuration>
           </plugin>
     </plugins>

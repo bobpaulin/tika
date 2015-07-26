@@ -55,17 +55,18 @@ import org.xml.sax.ContentHandler;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
 public class BundleIT {
-
-    private final File TARGET = new File("target");
+    
+    private static final String BUNDLE_JAR_SYS_PROP = "project.bundle.file";
     @Inject
     private BundleContext bc;
 
     @Configuration
     public Option[] configuration() throws IOException, URISyntaxException {
+        final String bundleFileName = System.getProperty( BUNDLE_JAR_SYS_PROP );
         return options(frameworkProperty("org.apache.tika.parser.ocr.serviceRank").value("1"), junitBundles(),
                 mavenBundle("org.apache.tika", "tika-osgi-bundle"),
                 mavenBundle("org.apache.tika", "tika-image-parser-bundle"),
-                bundle(new File(TARGET, "tika-tesseract-parser-bundle-1.10-SNAPSHOT.jar").toURI().toURL().toString()));
+                bundle(new File(bundleFileName).toURI().toString()));
     }
 
     @Test
