@@ -45,6 +45,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -62,6 +63,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.felix.framework.Felix;
+import org.apache.felix.framework.util.FelixConstants;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -71,6 +74,7 @@ import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.tika.Tika;
+import org.apache.tika.app.osgi.HostActivator;
 import org.apache.tika.batch.BatchProcessDriverCLI;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.config.TikaConfigSerializer;
@@ -107,6 +111,9 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ContentHandlerFactory;
 import org.apache.tika.sax.ExpandedTitleContentHandler;
 import org.apache.tika.xmp.XMPMetadata;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -337,7 +344,61 @@ public class TikaCLI {
 
     private boolean prettyPrint;
     
+    private HostActivator hostActivator = null;
+    private Felix felix = null;
+    
     public TikaCLI() throws Exception {
+        
+        
+        // Create a configuration property map.
+        Map config = new HashMap();
+        // Create host activator;
+        hostActivator = new HostActivator();
+        List list = new ArrayList<>();
+        list.add(hostActivator);
+        config.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
+        
+        File[] files = new File("bundle").listFiles();
+        List jars = new ArrayList();
+        if (files != null) {
+            Arrays.sort(files);
+            for (int i = 0; i < files.length; i++){
+                if (files[i].getName().toLowerCase().endsWith(".jar")) {
+                    jars.add(files[i]);
+                }
+            }
+                
+        }
+        
+        try
+        {
+            // Now create an instance of the framework with
+            // our configuration properties.
+            felix = new Felix(config);
+            // Now start Felix instance.
+            felix.start();
+         // Create, configure, and start an OSGi framework instance
+            // using the ServiceLoader to get a factory.
+            List bundleList = new ArrayList();
+
+            // Install bundle JAR files and remember the bundle objects.
+            BundleContext ctxt = hostActivator.getContext();
+            for (int i = 0; i < jars.size(); i++) {
+                Bundle b = ctxt.installBundle(((File) jars.get(i)).toURI()
+                        .toString());
+                bundleList.add(b);
+            }
+            // Start all installed bundles.
+            for (int i = 0; i < bundleList.size(); i++) {
+                ((Bundle) bundleList.get(i)).start();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.err.println("Could not create framework: " + ex);
+            ex.printStackTrace();
+        }
+        
         context = new ParseContext();
         detector = new DefaultDetector();
         parser = new AutoDetectParser(detector);
