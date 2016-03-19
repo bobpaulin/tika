@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.tika.batch.DigestingAutoDetectParserFactory;
 import org.apache.tika.batch.ParserFactory;
 import org.apache.tika.parser.DigestingParser;
-import org.apache.tika.parser.utils.CommonsDigester;
+//import org.apache.tika.parser.utils.CommonsDigester;
 import org.apache.tika.util.ClassLoaderUtil;
 import org.apache.tika.util.XMLDOMUtil;
 import org.w3c.dom.Node;
@@ -47,16 +47,16 @@ public class AppParserFactoryBuilder implements IParserFactoryBuilder {
                         bString);
             }
         }
-        if (pf instanceof DigestingAutoDetectParserFactory) {
+       /* if (pf instanceof DigestingAutoDetectParserFactory) {
             DigestingParser.Digester d = buildDigester(localAttrs);
             ((DigestingAutoDetectParserFactory)pf).setDigester(d);
-        }
+        }*/
         return pf;
     }
 
     private DigestingParser.Digester buildDigester(Map<String, String> localAttrs) {
         String digestString = localAttrs.get("digest");
-        CommonsDigester.DigestAlgorithm[] algos = CommonsDigester.parse(digestString);
+        //CommonsDigester.DigestAlgorithm[] algos = CommonsDigester.parse(digestString);
 
         String readLimitString = localAttrs.get("digestMarkLimit");
         if (readLimitString == null) {
@@ -71,6 +71,7 @@ public class AppParserFactoryBuilder implements IParserFactoryBuilder {
             throw new IllegalArgumentException("Parameter \"digestMarkLimit\" must be a parseable int: "+
             readLimitString);
         }
-        return new CommonsDigester(readLimit, algos);
+        return null;
+        //return new CommonsDigester(readLimit, algos);
     }
 }

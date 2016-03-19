@@ -27,6 +27,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.osgi.TikaService;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -76,6 +77,10 @@ public class TikaServiceImpl implements TikaService {
     @Override
     public boolean isAvailable() {
         return tika.getTranslator().isAvailable();
+    }
+    
+    public Parser getParser(){
+        return tika.getParser();
     }
 
 }

@@ -75,8 +75,8 @@ import org.apache.tika.parser.DigestingParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.RecursiveParserWrapper;
-import org.apache.tika.parser.html.BoilerpipeContentHandler;
-import org.apache.tika.parser.utils.CommonsDigester;
+//import org.apache.tika.parser.html.BoilerpipeContentHandler;
+//import org.apache.tika.parser.utils.CommonsDigester;
 import org.apache.tika.sax.BasicContentHandlerFactory;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ContentHandlerDecorator;
@@ -120,7 +120,7 @@ public class TikaGUI extends JFrame
         }
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         final TikaConfig finalConfig = config;
-        SwingUtilities.invokeLater(new Runnable() {
+        /*SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new TikaGUI(new DigestingParser(
                         new AutoDetectParser(finalConfig),
@@ -129,7 +129,7 @@ public class TikaGUI extends JFrame
                                 CommonsDigester.DigestAlgorithm.SHA256)
                         )).setVisible(true);
             }
-        });
+        });*/
     }
 
     /**
@@ -334,7 +334,7 @@ public class TikaGUI extends JFrame
         ContentHandler handler = new TeeContentHandler(
                 getHtmlHandler(htmlBuffer),
                 getTextContentHandler(textBuffer),
-                getTextMainContentHandler(textMainBuffer),
+                //getTextMainContentHandler(textMainBuffer),
                 getXmlContentHandler(xmlBuffer));
 
         context.set(DocumentSelector.class, new ImageDocumentSelector());
@@ -589,9 +589,9 @@ public class TikaGUI extends JFrame
     private ContentHandler getTextContentHandler(Writer writer) {
         return new BodyContentHandler(writer);
     }
-    private ContentHandler getTextMainContentHandler(Writer writer) {
+    /*private ContentHandler getTextMainContentHandler(Writer writer) {
         return new BoilerpipeContentHandler(writer);
-    }
+    }*/
 
     private ContentHandler getXmlContentHandler(Writer writer)
             throws TransformerConfigurationException {

@@ -82,6 +82,7 @@
               org.apache.tika.parser.mbox.*,
               org.apache.tika.parser.microsoft.*,
               org.apache.tika.parser.microsoft.ooxml.*,
+              org.apache.tika.parser.opc.*,
               org.apache.tika.parser.odf.*,
               org.apache.tika.parser.opendocument.*,
               org.apache.tika.parser.rtf.*

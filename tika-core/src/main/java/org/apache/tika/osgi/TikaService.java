@@ -21,5 +21,7 @@ import org.apache.tika.language.translate.Translator;
 import org.apache.tika.parser.Parser;
 
 public interface TikaService extends Parser, Detector, Translator {
+    
+    public Parser getParser();
 
 }

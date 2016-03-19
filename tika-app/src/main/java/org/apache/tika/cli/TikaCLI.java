@@ -69,10 +69,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.DocumentInputStream;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+//import org.apache.poi.poifs.filesystem.DirectoryEntry;
+//import org.apache.poi.poifs.filesystem.DocumentEntry;
+//import org.apache.poi.poifs.filesystem.DocumentInputStream;
+//import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.tika.Tika;
 import org.apache.tika.app.osgi.HostActivator;
 import org.apache.tika.batch.BatchProcessDriverCLI;
@@ -95,6 +95,7 @@ import org.apache.tika.mime.MediaTypeRegistry;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
+import org.apache.tika.osgi.TikaService;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.DigestingParser;
@@ -104,13 +105,13 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.parser.PasswordProvider;
 import org.apache.tika.parser.RecursiveParserWrapper;
-import org.apache.tika.parser.html.BoilerpipeContentHandler;
-import org.apache.tika.parser.utils.CommonsDigester;
+//import org.apache.tika.parser.html.BoilerpipeContentHandler;
+//import org.apache.tika.parser.utils.CommonsDigester;
 import org.apache.tika.sax.BasicContentHandlerFactory;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ContentHandlerFactory;
 import org.apache.tika.sax.ExpandedTitleContentHandler;
-import org.apache.tika.xmp.XMPMetadata;
+//import org.apache.tika.xmp.XMPMetadata;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -245,13 +246,13 @@ public class TikaCLI {
         }
     };
 
-    private final OutputType TEXT_MAIN = new OutputType() {
+    /*private final OutputType TEXT_MAIN = new OutputType() {
         @Override
         protected ContentHandler getContentHandler(
                 OutputStream output, Metadata metadata) throws Exception {
             return new BoilerpipeContentHandler(getOutputWriter(output, encoding));
         }
-    };
+    };*/
     
     private final OutputType METADATA = new OutputType() {
         @Override
@@ -273,7 +274,7 @@ public class TikaCLI {
         }
     };
 
-    private final OutputType XMP = new OutputType() {
+    /*private final OutputType XMP = new OutputType() {
         @Override
         protected ContentHandler getContentHandler(
                 OutputStream output, final Metadata metadata) throws Exception {
@@ -281,7 +282,7 @@ public class TikaCLI {
                     new PrintWriter(getOutputWriter(output, encoding));
             return new NoDocumentXMPMetaHandler(metadata, writer);
         }
-    };
+    };*/
 
     private final OutputType LANGUAGE = new OutputType() {
         @Override
@@ -357,6 +358,10 @@ public class TikaCLI {
         List list = new ArrayList<>();
         list.add(hostActivator);
         config.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
+        config
+        .put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
+                "org.apache.tika; version=1.0.0,org.apache.tika.concurrent; version=1.0.0,org.apache.tika.config; version=1.0.0,org.apache.tika.detect; version=1.0.0,org.apache.tika.embedder; version=1.0.0,org.apache.tika.exception; version=1.0.0,org.apache.tika.extractor; version=1.0.0,org.apache.tika.fork; version=1.0.0,org.apache.tika.io; version=1.0.0,org.apache.tika.language.detect; version=1.0.0,org.apache.tika.language.translate; version=1.0.0,org.apache.tika.metadata; version=1.0.0,org.apache.tika.mime; version=1.2.0,org.apache.tika.osgi; version=1.0.0,org.apache.tika.osgi.internal; version=1.0.0,org.apache.tika.parser; version=1.0.0,org.apache.tika.parser.external; version=1.0.0,org.apache.tika.sax; version=1.0.0,org.apache.tika.sax.xpath; version=1.0.0,org.apache.tika.utils; version=\"1.0.0\"");
+
         
         File[] files = new File("bundle").listFiles();
         List jars = new ArrayList();
@@ -392,6 +397,9 @@ public class TikaCLI {
             for (int i = 0; i < bundleList.size(); i++) {
                 ((Bundle) bundleList.get(i)).start();
             }
+            
+            this.parser = ctxt.getService(ctxt.getServiceReference(TikaService.class));
+            
         }
         catch (Exception ex)
         {
@@ -401,7 +409,7 @@ public class TikaCLI {
         
         context = new ParseContext();
         detector = new DefaultDetector();
-        parser = new AutoDetectParser(detector);
+        //parser = new AutoDetectParser(detector);
         context.set(Parser.class, parser);
         context.set(PasswordProvider.class, new PasswordProvider() {
             public String getPassword(Metadata metadata) {
@@ -464,9 +472,9 @@ public class TikaCLI {
         } else if (arg.startsWith("--config=")) {
             configure(arg.substring("--config=".length()));
         } else if (arg.startsWith("--digest=")) {
-            CommonsDigester.DigestAlgorithm[] algos = CommonsDigester.parse(
+            /*CommonsDigester.DigestAlgorithm[] algos = CommonsDigester.parse(
                     arg.substring("--digest=".length()));
-            digester = new CommonsDigester(MAX_MARK,algos);
+            digester = new CommonsDigester(MAX_MARK,algos);*/
             parser = new DigestingParser(parser, digester);
         } else if (arg.startsWith("-e")) {
             encoding = arg.substring("-e".length());
@@ -481,7 +489,7 @@ public class TikaCLI {
         } else if (arg.equals("-J") || arg.equals("--jsonRecursive")) {
             recursiveJSON = true;
         } else if (arg.equals("-y") || arg.equals("--xmp")) {
-            type = XMP;
+            //type = XMP;
         } else if (arg.equals("-x") || arg.equals("--xml")) {
             type = XML;
         } else if (arg.equals("-h") || arg.equals("--html")) {
@@ -489,7 +497,7 @@ public class TikaCLI {
         } else if (arg.equals("-t") || arg.equals("--text")) {
             type = TEXT;
         } else if (arg.equals("-T") || arg.equals("--text-main")) {
-            type = TEXT_MAIN;
+            //type = TEXT_MAIN;
         } else if (arg.equals("-m") || arg.equals("--metadata")) {
             type = METADATA;
         } else if (arg.equals("-l") || arg.equals("--language")) {
@@ -500,7 +508,7 @@ public class TikaCLI {
             extractDir = new File(arg.substring("--extract-dir=".length()));
         } else if (arg.equals("-z") || arg.equals("--extract")) {
             type = NO_OUTPUT;
-            context.set(EmbeddedDocumentExtractor.class, new FileEmbeddedDocumentExtractor());
+           // context.set(EmbeddedDocumentExtractor.class, new FileEmbeddedDocumentExtractor());
         } else if (arg.equals("-r") || arg.equals("--pretty-print")) {
             prettyPrint = true;
         } else if (arg.equals("-p") || arg.equals("--port")
@@ -568,9 +576,9 @@ public class TikaCLI {
             handlerType = BasicContentHandlerFactory.HANDLER_TYPE.XML;
         } else if (type.equals(TEXT)) {
             handlerType = BasicContentHandlerFactory.HANDLER_TYPE.TEXT;
-        } else if (type.equals(TEXT_MAIN)) {
+        }/* else if (type.equals(TEXT_MAIN)) {
             handlerType = BasicContentHandlerFactory.HANDLER_TYPE.BODY;
-        } else if (type.equals(METADATA)) {
+        }*/ else if (type.equals(METADATA)) {
             handlerType = BasicContentHandlerFactory.HANDLER_TYPE.IGNORE;
         }
         return new BasicContentHandlerFactory(handlerType, -1);
@@ -774,6 +782,12 @@ public class TikaCLI {
      
     private void displayParser(Parser p, boolean includeMimeTypes, boolean apt, int i) {
         String decorated = null;
+        
+        if(p instanceof TikaService) {
+            TikaService serviceParser = (TikaService) p;
+            p = serviceParser.getParser();
+        }
+        
         if (p instanceof ParserDecorator) {
             ParserDecorator pd = (ParserDecorator)p;
             decorated = " (Wrapped by " + pd.getDecorationName() + ")";
@@ -1058,7 +1072,7 @@ public class TikaCLI {
         handler.setResult(new StreamResult(output));
         return handler;
     }
-
+/*
     private class FileEmbeddedDocumentExtractor
             implements EmbeddedDocumentExtractor {
 
@@ -1146,7 +1160,7 @@ public class TikaCLI {
                 }
             }
         }
-    }
+    }*/
 
     private class TikaServer extends Thread {
 
@@ -1241,7 +1255,7 @@ public class TikaCLI {
     /**
      * Outputs the Tika metadata as XMP using the Tika XMP module
      */
-    private class NoDocumentXMPMetaHandler extends DefaultHandler
+   /* private class NoDocumentXMPMetaHandler extends DefaultHandler
     {
     	protected final Metadata metadata;
     	
@@ -1269,7 +1283,7 @@ public class TikaCLI {
         	}
         }
     }
-
+*/
     private class NoDocumentJSONMetHandler extends DefaultHandler {
 
         protected final Metadata metadata;

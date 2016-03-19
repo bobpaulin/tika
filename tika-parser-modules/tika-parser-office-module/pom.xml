@@ -69,11 +69,11 @@
       <artifactId>java-libpst</artifactId>
       <version>0.8.1</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-parser-package-module</artifactId>
       <version>${project.version}</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>tika-parser-web-module</artifactId>
