@@ -319,8 +319,20 @@ public class ServiceLoader {
     @SuppressWarnings("unchecked")
     public <T> List<T> loadStaticServiceProviders(Class<T> iface) {
         List<T> providers = new ArrayList<T>();
-
-        if (loader != null) {
+        
+        java.util.ServiceLoader<T> javaServiceLoader = java.util.ServiceLoader.load(iface);
+        
+        for(T theClass:javaServiceLoader)
+        {
+        	try {
+				providers.add((T) theClass.getClass().newInstance());
+			} catch (Exception e) {
+				handler.handleLoadError(theClass.getClass().getName(), e);
+			}
+        }
+        //TODO Java 9 classloader.getResource* doesn't work in named modules
+        //Use Java ServiceLoader 
+        /*if (loader != null) {
             List<String> names = identifyStaticServiceProviders(iface);
 
             for (String name : names) {
@@ -333,7 +345,7 @@ public class ServiceLoader {
                     handler.handleLoadError(name, t);
                 }
             }
-        }
+        }*/
         if (providers.isEmpty()) {
             handler.handleNoOccurrences(iface.getName());
         }

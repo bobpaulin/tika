@@ -158,7 +158,8 @@ public class MimeTypesFactory {
         String classPrefix = MimeTypesReader.class.getPackage().getName().replace('.', '/') + "/";
        
         // Get the core URL, and all the extensions URLs
-        URL coreURL = classLoader.getResource(classPrefix+coreFilePath);
+        //TODO Java 9 classloader.getResource* doesn't work in named modules
+        URL coreURL = MimeTypesReader.class.getResource(coreFilePath);
         List<URL> extensionURLs = Collections.list(
                 classLoader.getResources(classPrefix+extensionFilePath));
 

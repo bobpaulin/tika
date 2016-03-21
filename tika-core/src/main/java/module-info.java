@@ -25,4 +25,9 @@ module tika.core {
     exports org.apache.tika.sax;
     exports org.apache.tika.sax.xpath;
     exports org.apache.tika.utils;
+    
+    uses org.apache.tika.parser.Parser;
+    uses org.apache.tika.detect.Detector;
+    uses org.apache.tika.detect.EncodingDetector;
+    
 }
