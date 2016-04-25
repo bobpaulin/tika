@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import org.apache.tika.TikaTest;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -45,7 +46,7 @@ import org.xml.sax.SAXException;
 
 public class TestChmExtraction extends TikaTest {
 
-    private final Parser parser = new ChmParser();
+    private final Parser parser = new ChmParser(new ServiceLoader());
 
     private final List<String> files = Arrays.asList(
             "/test-documents/testChm.chm",
@@ -55,7 +56,7 @@ public class TestChmExtraction extends TikaTest {
     @Test
     public void testGetText() throws Exception {
         BodyContentHandler handler = new BodyContentHandler();
-        new ChmParser().parse(
+        new ChmParser(new ServiceLoader()).parse(
                 new ByteArrayInputStream(TestParameters.chmData),
                 handler, new Metadata(), new ParseContext());
         assertTrue(handler.toString().contains(

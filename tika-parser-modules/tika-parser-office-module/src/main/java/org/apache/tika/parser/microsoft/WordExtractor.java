@@ -48,12 +48,14 @@ import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.XHTMLContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
 
 public class WordExtractor extends AbstractPOIFSExtractor {
 
@@ -79,8 +81,8 @@ public class WordExtractor extends AbstractPOIFSExtractor {
     private boolean curBold;
     private boolean curItalic;
 
-    public WordExtractor(ParseContext context) {
-        super(context);
+    public WordExtractor(ParseContext context, ServiceLoader serviceLoader) {
+        super(context, serviceLoader);
     }
 
     private static int countParagraphs(Range... ranges) {

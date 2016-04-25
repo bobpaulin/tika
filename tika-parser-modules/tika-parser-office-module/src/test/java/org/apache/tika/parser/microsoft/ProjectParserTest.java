@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.OfficeOpenXMLCore;
 import org.apache.tika.metadata.OfficeOpenXMLExtended;
@@ -56,7 +57,7 @@ public class ProjectParserTest {
     private void doTestProject(InputStream input) throws Exception {
         Metadata metadata = new Metadata();
         ContentHandler handler = new BodyContentHandler();
-        new OfficeParser().parse(input, handler, metadata, new ParseContext());
+        new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
         assertEquals(
                 "application/vnd.ms-project",

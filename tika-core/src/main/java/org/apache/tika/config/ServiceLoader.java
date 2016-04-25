@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,18 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+
+import org.apache.tika.detect.Detector;
+import org.apache.tika.detect.DetectorProxy;
+import org.apache.tika.detect.EncodingDetector;
+import org.apache.tika.detect.EncodingDetectorProxy;
+import org.apache.tika.detect.NoOpDetector;
+import org.apache.tika.detect.NoOpEncodingDetector;
+import org.apache.tika.parser.NoOpParser;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.ParserProxy;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -123,11 +135,14 @@ public class ServiceLoader {
 
     private final boolean dynamic;
     
+    private final Map<String, Object> proxyServiceCache;
+    
     public ServiceLoader(
             ClassLoader loader, LoadErrorHandler handler, boolean dynamic) {
         this.loader = loader;
         this.handler = handler;
         this.dynamic = dynamic;
+        this.proxyServiceCache = new HashMap<>();
     }
 
     public ServiceLoader(ClassLoader loader, LoadErrorHandler handler) {
@@ -327,7 +342,7 @@ public class ServiceLoader {
                 try {
                     Class<?> klass = loader.loadClass(name);
                     if (iface.isAssignableFrom(klass)) {
-                        providers.add((T) klass.newInstance());
+                        providers.add((T)createServiceInstance(klass));
                     }
                 } catch (Throwable t) {
                     handler.handleLoadError(name, t);
@@ -338,6 +353,55 @@ public class ServiceLoader {
             handler.handleNoOccurrences(iface.getName());
         }
         return providers;
+    }
+
+    public <T> T createServiceInstance(Class<?> klass)
+            throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        T serviceInstance = null;
+        try{
+            serviceInstance = 
+                    (T)klass.getConstructor(ServiceLoader.class).newInstance(this);
+        }catch(NoSuchMethodException e) {}
+        if(serviceInstance == null)
+        {
+            serviceInstance = (T) klass.newInstance();
+        }
+        return serviceInstance;
+    }
+    
+    public <T> T getProxyService(String serviceName, Class<T> iface, ClassLoader classLoader){
+        
+        Object result = null;
+        synchronized(this){
+            result = this.proxyServiceCache.get(serviceName);
+            
+            if(result == null)
+            {
+                try {
+                    result = createServiceInstance(Class.forName(serviceName, true, classLoader));
+                    this.proxyServiceCache.put(serviceName, result);
+                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
+                    this.handler.handleLoadError(serviceName, e);
+                }
+            }
+        }
+        if(result == null)
+        {
+            if(iface.equals(Parser.class))
+            {
+                result = NoOpServiceHandler.NOOP_PARSER;
+            }
+            else if(iface.equals(Detector.class))
+            {
+                result = NoOpServiceHandler.NOOP_DETECTOR;
+            }
+            else if(iface.equals(EncodingDetector.class))
+            {
+                result = NoOpServiceHandler.NOOP_ENCODING_DETECTOR;
+            }
+        }
+        
+        return (T)result;
     }
 
     private static final Pattern COMMENT = Pattern.compile("#.*");

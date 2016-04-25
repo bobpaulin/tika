@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import org.apache.tika.TikaTest;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Office;
 import org.apache.tika.metadata.OfficeOpenXMLCore;
@@ -39,7 +40,7 @@ public class PowerPointParserTest extends TikaTest {
                 "/test-documents/testPPT.ppt")) {
             Metadata metadata = new Metadata();
             ContentHandler handler = new BodyContentHandler();
-            new OfficeParser().parse(input, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
             assertEquals(
                     "application/vnd.ms-powerpoint",
@@ -124,7 +125,7 @@ public class PowerPointParserTest extends TikaTest {
 
         try (InputStream stream = PowerPointParserTest.class.getResourceAsStream(
                 "/test-documents/testPPT_masterFooter.ppt")) {
-            new OfficeParser().parse(stream, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(stream, handler, metadata, new ParseContext());
         }
 
         String content = handler.toString();
@@ -148,7 +149,7 @@ public class PowerPointParserTest extends TikaTest {
 
         try (InputStream stream = PowerPointParserTest.class.getResourceAsStream(
                 "/test-documents/testPPT_masterText.ppt")) {
-            new OfficeParser().parse(stream, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(stream, handler, metadata, new ParseContext());
         }
 
         String content = handler.toString();
@@ -168,7 +169,7 @@ public class PowerPointParserTest extends TikaTest {
 
         try (InputStream stream = PowerPointParserTest.class.getResourceAsStream(
                 "/test-documents/testPPT_masterText2.ppt")) {
-            new OfficeParser().parse(stream, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(stream, handler, metadata, new ParseContext());
         }
 
         String content = handler.toString();
@@ -192,7 +193,7 @@ public class PowerPointParserTest extends TikaTest {
             ContentHandler handler = new BodyContentHandler(-1);
             ParseContext context = new ParseContext();
             context.set(Locale.class, Locale.US);
-            new OfficeParser().parse(input, handler, metadata, context);
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, context);
         }
 
         assertEquals("application/vnd.ms-powerpoint", metadata.get(Metadata.CONTENT_TYPE));

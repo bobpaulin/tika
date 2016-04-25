@@ -546,11 +546,11 @@ public class TikaConfig {
 
                     // Default constructor fallback
                     if (loaded == null) {
-                        loaded = loadedClass.newInstance();
+                        loaded = loader.createServiceInstance(loadedClass);
                     }
                 } else {
                     // Regular class, create as-is
-                    loaded = loadedClass.newInstance();
+                    loaded = loader.createServiceInstance(loadedClass);
                     // TODO Support arguments, needed for Translators etc
                     // See the thread "Configuring parsers and translators" for details 
                 }

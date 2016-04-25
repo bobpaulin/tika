@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -52,8 +53,9 @@ public class ChmParser extends AbstractParser {
 
     private final Parser htmlProxy;
     
-    public ChmParser() {
-        this.htmlProxy = createParserProxy("org.apache.tika.parser.html.HtmlParser");
+    public ChmParser(ServiceLoader serviceLoader) {
+        
+        this.htmlProxy = serviceLoader.getProxyService("org.apache.tika.parser.html.HtmlParser", Parser.class, ChmParser.class.getClassLoader());
     }
     @Override
     public Set<MediaType> getSupportedTypes(ParseContext context) {

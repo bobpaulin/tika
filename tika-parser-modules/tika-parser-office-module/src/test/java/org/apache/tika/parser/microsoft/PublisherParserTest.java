@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.parser.ParseContext;
@@ -36,7 +37,7 @@ public class PublisherParserTest {
                 "/test-documents/testPUBLISHER.pub")) {
             Metadata metadata = new Metadata();
             ContentHandler handler = new BodyContentHandler();
-            new OfficeParser().parse(input, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
             assertEquals(
                     "application/x-mspublisher",

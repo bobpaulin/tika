@@ -35,6 +35,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.detect.AbstractDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.TikaException;
@@ -58,8 +59,11 @@ public class ZipContainerDetector extends AbstractDetector {
     
     private final Detector opcDetector;
     
-    public ZipContainerDetector() {
-        this.opcDetector = createDetectorProxy("org.apache.tika.parser.opc.OPCDetector");
+    private final ServiceLoader serviceLoader;
+    
+    public ZipContainerDetector(ServiceLoader serviceLoader) {
+        this.serviceLoader = serviceLoader;
+        this.opcDetector = serviceLoader.getProxyService("org.apache.tika.parser.opc.OPCDetector", Detector.class, ZipContainerDetector.class.getClassLoader());
     }
 
     public MediaType detect(InputStream input, Metadata metadata)

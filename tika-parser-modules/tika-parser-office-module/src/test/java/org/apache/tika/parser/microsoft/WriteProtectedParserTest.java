@@ -20,6 +20,7 @@ import static org.apache.tika.TikaTest.assertContains;
 
 import java.io.InputStream;
 
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
@@ -35,7 +36,7 @@ public class WriteProtectedParserTest {
 
         Metadata metadata = new Metadata();
         ContentHandler handler = new BodyContentHandler();
-        new OfficeParser().parse(input, handler, metadata, new ParseContext());
+        new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
         String content = handler.toString();
         assertContains("Office", content);
     }

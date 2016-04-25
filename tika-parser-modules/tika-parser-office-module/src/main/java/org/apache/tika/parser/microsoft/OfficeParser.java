@@ -35,6 +35,7 @@ import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.EncryptedDocumentException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -78,6 +79,12 @@ public class OfficeParser extends AbstractParser {
                     POIFSDocumentType.SOLIDWORKS_ASSEMBLY.type,
                     POIFSDocumentType.SOLIDWORKS_DRAWING.type
             )));
+    
+    private final ServiceLoader serviceLoader;
+    
+    public OfficeParser(ServiceLoader serviceLoader) {
+        this.serviceLoader = serviceLoader;
+    }
 
     public Set<MediaType> getSupportedTypes(ParseContext context) {
         return SUPPORTED_TYPES;
@@ -143,15 +150,15 @@ public class OfficeParser extends AbstractParser {
                 xhtml.element("p", publisherTextExtractor.getText());
                 break;
             case WORDDOCUMENT:
-                new WordExtractor(context).parse(root, xhtml);
+                new WordExtractor(context, serviceLoader).parse(root, xhtml);
                 break;
             case POWERPOINT:
-                new HSLFExtractor(context).parse(root, xhtml);
+                new HSLFExtractor(context, serviceLoader).parse(root, xhtml);
                 break;
             case WORKBOOK:
             case XLR:
                 Locale locale = context.get(Locale.class, Locale.getDefault());
-                new ExcelExtractor(context, metadata).parse(root, xhtml, locale);
+                new ExcelExtractor(context, metadata, serviceLoader).parse(root, xhtml, locale);
                 break;
             case PROJECT:
                 // We currently can't do anything beyond the metadata
@@ -165,7 +172,7 @@ public class OfficeParser extends AbstractParser {
                 break;
             case OUTLOOK:
                 OutlookExtractor extractor =
-                        new OutlookExtractor(root, context);
+                        new OutlookExtractor(root, context, this.serviceLoader);
 
                 extractor.parse(xhtml, metadata);
                 break;

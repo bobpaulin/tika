@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import org.apache.tika.TikaTest;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.EncryptedDocumentException;
@@ -47,7 +48,7 @@ public class ExcelParserTest extends TikaTest {
 
         ParseContext context = new ParseContext();
         context.set(Locale.class, Locale.US);
-        XMLResult r = getXML("testEXCEL.xls", new OfficeParser(), new Metadata(), context);
+        XMLResult r = getXML("testEXCEL.xls", new OfficeParser(new ServiceLoader()), new Metadata(), context);
 
         assertEquals(
                 "application/vnd.ms-excel",
@@ -79,7 +80,7 @@ public class ExcelParserTest extends TikaTest {
     public void testExcelParserFormatting() throws Exception {
         ParseContext context = new ParseContext();
         context.set(Locale.class, Locale.US);
-        XMLResult r = getXML("testEXCEL-formats.xls", new OfficeParser(), new Metadata(), context);
+        XMLResult r = getXML("testEXCEL-formats.xls", new OfficeParser(new ServiceLoader()), new Metadata(), context);
 
         assertEquals(
                 "application/vnd.ms-excel",
@@ -159,7 +160,7 @@ public class ExcelParserTest extends TikaTest {
                 return "tika";
             }
         });
-        XMLResult r = getXML("testEXCEL_protected_passtika.xls", new OfficeParser(), new Metadata(), context);
+        XMLResult r = getXML("testEXCEL_protected_passtika.xls", new OfficeParser(new ServiceLoader()), new Metadata(), context);
 
         assertEquals(
                 "application/vnd.ms-excel",
@@ -181,7 +182,7 @@ public class ExcelParserTest extends TikaTest {
     @Test
     public void testExcelParserCharts() throws Exception {
 
-        XMLResult r = getXML("testEXCEL-charts.xls", new OfficeParser());
+        XMLResult r = getXML("testEXCEL-charts.xls", new OfficeParser(new ServiceLoader()));
         assertEquals(
                 "application/vnd.ms-excel",
                 r.metadata.get(Metadata.CONTENT_TYPE));
@@ -210,7 +211,7 @@ public class ExcelParserTest extends TikaTest {
     @Test
     public void testJXL() throws Exception {
 
-        XMLResult r = getXML("jxl.xls", new OfficeParser());
+        XMLResult r = getXML("jxl.xls", new OfficeParser(new ServiceLoader()));
         assertEquals(
                 "application/vnd.ms-excel",
                 r.metadata.get(Metadata.CONTENT_TYPE));
@@ -221,7 +222,7 @@ public class ExcelParserTest extends TikaTest {
     @Test
     public void testWorksSpreadsheet70() throws Exception {
         assertContains("Microsoft Works",
-                getXML("testWORKSSpreadsheet7.0.xlr", new OfficeParser()).xml);
+                getXML("testWORKSSpreadsheet7.0.xlr", new OfficeParser(new ServiceLoader())).xml);
     }
 
     /**
@@ -245,7 +246,7 @@ public class ExcelParserTest extends TikaTest {
         }
 
         // OfficeParser won't handle it
-        assertEquals(false, (new OfficeParser()).getSupportedTypes(new ParseContext()).contains(type));
+        assertEquals(false, (new OfficeParser(new ServiceLoader())).getSupportedTypes(new ParseContext()).contains(type));
 
         // OOXMLParser won't handle it
         assertEquals(false, (new OOXMLParser()).getSupportedTypes(new ParseContext()).contains(type));
@@ -282,7 +283,7 @@ public class ExcelParserTest extends TikaTest {
         }
 
         // OfficeParser can handle it
-        assertEquals(true, (new OfficeParser()).getSupportedTypes(new ParseContext()).contains(type));
+        assertEquals(true, (new OfficeParser(new ServiceLoader())).getSupportedTypes(new ParseContext()).contains(type));
 
         // OOXMLParser won't handle it
         assertEquals(false, (new OOXMLParser()).getSupportedTypes(new ParseContext()).contains(type));
@@ -344,7 +345,7 @@ public class ExcelParserTest extends TikaTest {
         ParseContext context = new ParseContext();
         context.set(Locale.class, Locale.US);
 
-        XMLResult r = getXML("testEXCEL_custom_props.xls", new OfficeParser(), new Metadata(), context);
+        XMLResult r = getXML("testEXCEL_custom_props.xls", new OfficeParser(new ServiceLoader()), new Metadata(), context);
         Metadata metadata = r.metadata;
         assertEquals("application/vnd.ms-excel", metadata.get(Metadata.CONTENT_TYPE));
         assertEquals("", metadata.get(TikaCoreProperties.CREATOR));
@@ -364,7 +365,7 @@ public class ExcelParserTest extends TikaTest {
         ParseContext context = new ParseContext();
         context.set(Locale.class, Locale.UK);
 
-        XMLResult r = getXML("testEXCEL_headers_footers.xls", new OfficeParser(),
+        XMLResult r = getXML("testEXCEL_headers_footers.xls", new OfficeParser(new ServiceLoader()),
                 new Metadata(), context);
 
         Metadata metadata = r.metadata;

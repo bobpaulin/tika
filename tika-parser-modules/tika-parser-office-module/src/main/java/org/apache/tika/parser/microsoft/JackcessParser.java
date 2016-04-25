@@ -28,6 +28,8 @@ import com.healthmarketscience.jackcess.CryptCodecProvider;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.util.LinkResolver;
+
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.EncryptedDocumentException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -66,6 +68,12 @@ public class JackcessParser extends AbstractParser {
     private static final Set<MediaType> SUPPORTED_TYPES = Collections.singleton(MEDIA_TYPE);
 
     private Locale locale = Locale.ROOT;
+    
+    private final ServiceLoader serviceLoader;
+    
+    public JackcessParser(ServiceLoader serviceLoader) {
+        this.serviceLoader = serviceLoader;
+    }
 
     @Override
     public Set<MediaType> getSupportedTypes(ParseContext context) {
@@ -98,7 +106,7 @@ public class JackcessParser extends AbstractParser {
                         .setReadOnly(true).open();
             }
             db.setLinkResolver(IGNORE_LINK_RESOLVER);//just in case
-            JackcessExtractor ex = new JackcessExtractor(context, locale);
+            JackcessExtractor ex = new JackcessExtractor(context, locale, serviceLoader);
             ex.parse(db, xhtml, metadata);
         } catch (IllegalStateException e) {
             if (e.getMessage() != null && e.getMessage().contains("Incorrect password")) {

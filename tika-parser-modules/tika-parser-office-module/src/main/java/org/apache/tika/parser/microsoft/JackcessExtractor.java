@@ -41,6 +41,7 @@ import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.query.Query;
 import com.healthmarketscience.jackcess.util.OleBlob;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -74,9 +75,9 @@ class JackcessExtractor extends AbstractPOIFSExtractor {
 
     private final Parser htmlParserProxy;
 
-    protected JackcessExtractor(ParseContext context, Locale locale) {
-        super(context);
-        this.htmlParserProxy = new ParserProxy("org.apache.tika.parser.html.HtmlParser", getClass().getClassLoader());
+    protected JackcessExtractor(ParseContext context, Locale locale, ServiceLoader serviceLoader) {
+        super(context, serviceLoader);
+        this.htmlParserProxy = serviceLoader.getProxyService("org.apache.tika.parser.html.HtmlParser", Parser.class, getClass().getClassLoader());
         currencyFormatter = NumberFormat.getCurrencyInstance(locale);
         shortDateTimeFormatter = DateFormat.getDateInstance(DateFormat.SHORT, locale);
     }

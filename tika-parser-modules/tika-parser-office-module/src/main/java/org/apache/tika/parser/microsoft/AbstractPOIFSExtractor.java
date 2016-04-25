@@ -29,6 +29,7 @@ import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.Ole10Native;
 import org.apache.poi.poifs.filesystem.Ole10NativeException;
 import org.apache.poi.hpsf.ClassID;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.detect.DetectorProxy;
@@ -56,12 +57,14 @@ abstract class AbstractPOIFSExtractor {
     private Detector detector;
     private Metadata metadata;
     private final Detector zipDetectorProxy;
+    private final ServiceLoader serviceLoader;
 
-    protected AbstractPOIFSExtractor(ParseContext context) {
-        this(context, null);
+    protected AbstractPOIFSExtractor(ParseContext context, ServiceLoader serviceLoader) {
+        this(context, null, serviceLoader);
     }
 
-    protected AbstractPOIFSExtractor(ParseContext context, Metadata metadata) {
+    protected AbstractPOIFSExtractor(ParseContext context, Metadata metadata, ServiceLoader serviceLoader) {
+        this.serviceLoader = serviceLoader;
         EmbeddedDocumentExtractor ex = context.get(EmbeddedDocumentExtractor.class);
 
         if (ex == null) {
@@ -75,7 +78,7 @@ abstract class AbstractPOIFSExtractor {
         this.mimeTypes = context.get(MimeTypes.class);
         this.detector = context.get(Detector.class);
         this.metadata = metadata;
-        this.zipDetectorProxy = new DetectorProxy("org.apache.tika.parser.pkg.ZipContainerDetector", getClass().getClassLoader());
+        this.zipDetectorProxy = serviceLoader.getProxyService("org.apache.tika.parser.pkg.ZipContainerDetector", Detector.class, getClass().getClassLoader());
     }
 
     // Note - these cache, but avoid creating the default TikaConfig if not needed

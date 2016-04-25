@@ -45,6 +45,7 @@ import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.util.CodePageUtil;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.detect.EncodingDetector;
 import org.apache.tika.detect.EncodingDetectorProxy;
 import org.apache.tika.exception.TikaException;
@@ -75,12 +76,12 @@ public class OutlookExtractor extends AbstractPOIFSExtractor {
 
     private final MAPIMessage msg;
 
-    public OutlookExtractor(NPOIFSFileSystem filesystem, ParseContext context) throws TikaException {
-        this(filesystem.getRoot(), context);
+    public OutlookExtractor(NPOIFSFileSystem filesystem, ParseContext context, ServiceLoader serviceLoader) throws TikaException {
+        this(filesystem.getRoot(), context, serviceLoader);
     }
 
-    public OutlookExtractor(DirectoryNode root, ParseContext context) throws TikaException {
-        super(context);
+    public OutlookExtractor(DirectoryNode root, ParseContext context, ServiceLoader serviceLoader) throws TikaException {
+        super(context, serviceLoader);
         this.htmlEncodingDetectorProxy = new EncodingDetectorProxy("org.apache.tika.parser.html.HtmlEncodingDetector", getClass().getClassLoader());
         this.htmlParserProxy = new ParserProxy("org.apache.tika.parser.html.HtmlParser", getClass().getClassLoader());
         this.dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);

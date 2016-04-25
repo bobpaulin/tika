@@ -26,6 +26,7 @@ import java.util.Locale;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.tika.TikaTest;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Office;
 import org.apache.tika.metadata.OfficeOpenXMLCore;
@@ -45,7 +46,7 @@ public class WordParserTest extends TikaTest {
                 "/test-documents/testWORD.doc")) {
             ContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
-            new OfficeParser().parse(input, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
             assertEquals(
                     "application/msword",
@@ -63,7 +64,7 @@ public class WordParserTest extends TikaTest {
                 "/test-documents/Doc1_ole.doc")) {
             ContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
-            new OfficeParser().parse(input, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
             assertContains("MSj00974840000[1].wav", handler.toString());
         }
@@ -176,7 +177,7 @@ public class WordParserTest extends TikaTest {
                 "/test-documents/testWORD6.doc")) {
             ContentHandler handler = new BodyContentHandler();
             Metadata metadata = new Metadata();
-            new OfficeParser().parse(input, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, new ParseContext());
 
             assertEquals(
                     "application/msword",
@@ -197,7 +198,7 @@ public class WordParserTest extends TikaTest {
 
         try (InputStream stream = WordParserTest.class.getResourceAsStream(
                 "/test-documents/testWORD_various.doc")) {
-            new OfficeParser().parse(stream, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(stream, handler, metadata, new ParseContext());
         }
 
         String content = handler.toString();
@@ -270,7 +271,7 @@ public class WordParserTest extends TikaTest {
 
         try (InputStream stream = WordParserTest.class.getResourceAsStream(
                 "/test-documents/testWORD_no_format.doc")) {
-            new OfficeParser().parse(stream, handler, metadata, new ParseContext());
+            new OfficeParser(new ServiceLoader()).parse(stream, handler, metadata, new ParseContext());
         }
 
         String content = handler.toString();
@@ -289,7 +290,7 @@ public class WordParserTest extends TikaTest {
             ContentHandler handler = new BodyContentHandler(-1);
             ParseContext context = new ParseContext();
             context.set(Locale.class, Locale.US);
-            new OfficeParser().parse(input, handler, metadata, context);
+            new OfficeParser(new ServiceLoader()).parse(input, handler, metadata, context);
         }
 
         assertEquals("application/msword", metadata.get(Metadata.CONTENT_TYPE));

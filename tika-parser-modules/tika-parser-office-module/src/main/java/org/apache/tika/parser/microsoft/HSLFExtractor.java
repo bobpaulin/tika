@@ -37,6 +37,7 @@ import org.apache.poi.hslf.usermodel.HSLFTextRun;
 import org.apache.poi.hslf.usermodel.HSLFTextShape;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.parser.ParseContext;
@@ -45,8 +46,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class HSLFExtractor extends AbstractPOIFSExtractor {
-    public HSLFExtractor(ParseContext context) {
-        super(context);
+    public HSLFExtractor(ParseContext context, ServiceLoader serviceLoader) {
+        super(context, serviceLoader);
     }
 
     protected void parse(

@@ -65,6 +65,7 @@ import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.exception.EncryptedDocumentException;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -102,8 +103,8 @@ public class ExcelExtractor extends AbstractPOIFSExtractor {
      */
     private boolean listenForAllRecords = false;
 
-    public ExcelExtractor(ParseContext context, Metadata metadata) {
-        super(context, metadata);
+    public ExcelExtractor(ParseContext context, Metadata metadata, ServiceLoader serviceLoader) {
+        super(context, metadata, serviceLoader);
     }
 
     /**

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 
 import org.apache.tika.TikaTest;
+import org.apache.tika.config.ServiceLoader;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.Parser;
@@ -33,7 +34,7 @@ public class OfficeParserTest extends TikaTest {
     @Test
     public void parseOfficeWord() throws Exception {
         Metadata metadata = new Metadata();
-        Parser parser = new OfficeParser();
+        Parser parser = new OfficeParser(new ServiceLoader());
 
         String xml = getXML(getTestDocument("test.doc"), parser, metadata).xml;
 
